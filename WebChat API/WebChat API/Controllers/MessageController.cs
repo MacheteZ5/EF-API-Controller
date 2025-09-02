@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebChat_API.Contexts;
@@ -10,6 +12,7 @@ namespace WebChat_API.Controllers
     [ApiController]
     public class MessageController : ControllerBase
     {
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("[action]/{firstContactID}")]
         public async Task<IEnumerable<Message>> Get([FromServices] Context dbContext, long firstContactID)
@@ -30,6 +33,7 @@ namespace WebChat_API.Controllers
             }
             return result.OrderBy(message => message.ID);
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         [Route("[action]")]
         public async Task<IActionResult> Post([FromServices] Context dbContext, [FromBody] Message message)
@@ -38,6 +42,7 @@ namespace WebChat_API.Controllers
             await dbContext.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("[action]/{messageID}")]
         public async Task<IActionResult> Put([FromServices] Context dbContext, [FromBody] Message newMessage, long messageID)

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -10,14 +12,16 @@ namespace WebChat_API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        [Route("[action]/{userName}")]
+        [Route("[action]/{userName}")] 
         public async Task<bool> GetIsActiveUser([FromServices] Context dbContext, string userName)
         {
             var user = await dbContext.user.FirstOrDefaultAsync(user => user.UserName == userName && user.StatusUserID == 1);
             var exists = (user is not null) ? true : false;
             return exists;
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("[action]/{userName}")]
         public async Task<Models.User> GetActiveUser([FromServices] Context dbContext, string userName)
@@ -25,6 +29,7 @@ namespace WebChat_API.Controllers
             var user = await dbContext.user.FirstOrDefaultAsync(user => user.UserName == userName && user.StatusUserID == 1);
             return user ?? new Models.User();
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         [Route("[action]")]
         public async Task<IActionResult> PostCreateUser([FromServices] Context dbContext, [FromBody] Models.User user)
@@ -33,6 +38,7 @@ namespace WebChat_API.Controllers
             await dbContext.SaveChangesAsync();
             return Ok();
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("[action]/{username}")]
         public async Task<IActionResult> PutUpdateUserInformation([FromServices] Context dbContext, [FromBody] Models.User user, string username)
@@ -50,6 +56,7 @@ namespace WebChat_API.Controllers
             }
             return NotFound();
         }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("[action]/{username}")]
         public async Task<IActionResult> PutUpdateUserStatus([FromServices] Context dbContext, string username)

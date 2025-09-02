@@ -6,7 +6,7 @@ namespace WebChat_API.Models
     {
         private int id = 0;
         private string name = string.Empty;
-        private string description  = string.Empty;
+        private string description = string.Empty;
         private bool vigente = true;
         private DateTime fecTransac = DateTime.Now;
 
