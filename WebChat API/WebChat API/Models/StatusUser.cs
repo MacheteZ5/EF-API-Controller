@@ -4,16 +4,16 @@ namespace WebChat_API.Models
 {
     public class StatusUser
     {
-        private int id = 0;
+        private byte id = 0;
         private string name = string.Empty;
         private string description = string.Empty;
-        private bool vigente = true;
-        private DateTime fecTransac = DateTime.Now;
+        private bool active = true;
+        private DateTime? dateCreated = DateTime.MinValue;
 
         [JsonIgnore]
-        public virtual IEnumerable<User> Users { get; set; } = new List<User>();
+        public virtual IEnumerable<User>? users { get; set; }
 
-        public int ID
+        public byte ID
         {
             get { return this.id; }
             set { this.id = value; }
@@ -28,15 +28,15 @@ namespace WebChat_API.Models
             get { return this.description; }
             set { this.description = value; }
         }
-        public bool Vigente
+        public bool Active
         {
-            get { return this.vigente; }
-            set { this.vigente = value; }
+            get { return this.active; }
+            set { this.active = value; }
         }
-        public DateTime FecTransac
+        public DateTime? DateCreated
         {
-            get { return this.fecTransac; }
-            set { this.fecTransac = value; }
+            get { return this.dateCreated; }
+            set { this.dateCreated = value; }
         }
     }
 }

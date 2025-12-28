@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using WebChat_API.Contexts;
+using WebChat_API.Models;
 
 namespace WebChat_API.Controllers
 {
@@ -14,25 +15,34 @@ namespace WebChat_API.Controllers
     {
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        [Route("[action]/{userName}")] 
+        [Route("[action]/{userName}")]
         public async Task<bool> GetIsActiveUser([FromServices] Context dbContext, string userName)
         {
-            var user = await dbContext.user.FirstOrDefaultAsync(user => user.UserName == userName && user.StatusUserID == 1);
-            var exists = (user is not null) ? true : false;
-            return exists;
+            var user = await dbContext.user.FirstOrDefaultAsync(user => user.UserName == userName && user.StatusID == 1);
+            return (user is not null) ? true : false;
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("[action]/{userName}/{password}")]
+        public async Task<bool> GetIsActiveUserCredentials([FromServices] Context dbContext, string userName, string password)
+        {
+            var user = await dbContext.user.FirstOrDefaultAsync(user => user.UserName == userName && user.Password == password && user.StatusID == 1);
+            return (user is not null) ? true : false;
+        }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         [Route("[action]/{userName}")]
-        public async Task<Models.User> GetActiveUser([FromServices] Context dbContext, string userName)
+        public async Task<User> GetActiveUser([FromServices] Context dbContext, string userName)
         {
-            var user = await dbContext.user.FirstOrDefaultAsync(user => user.UserName == userName && user.StatusUserID == 1);
-            return user ?? new Models.User();
+            var user = await dbContext.user.FirstOrDefaultAsync(user => user.UserName == userName && user.StatusID == 1);
+            return user ?? new User();
         }
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> PostCreateUser([FromServices] Context dbContext, [FromBody] Models.User user)
+        public async Task<IActionResult> PostCreateUser([FromServices] Context dbContext, [FromBody] User user)
         {
             await dbContext.user.AddAsync(user);
             await dbContext.SaveChangesAsync();
@@ -41,7 +51,7 @@ namespace WebChat_API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("[action]/{username}")]
-        public async Task<IActionResult> PutUpdateUserInformation([FromServices] Context dbContext, [FromBody] Models.User user, string username)
+        public async Task<IActionResult> PutUpdateUserInformation([FromServices] Context dbContext, [FromBody] User user, string username)
         {
             var actualUser = await dbContext.user.FindAsync(username);
             if (actualUser is not null)
@@ -56,15 +66,31 @@ namespace WebChat_API.Controllers
             }
             return NotFound();
         }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         [Route("[action]/{username}")]
-        public async Task<IActionResult> PutUpdateUserStatus([FromServices] Context dbContext, string username)
+        public async Task<IActionResult> PutDeleteUserStatus([FromServices] Context dbContext, string username)
         {
             var actualUser = await dbContext.user.FindAsync(username);
             if (actualUser is not null)
             {
-                actualUser.StatusUserID = 2;
+                actualUser.StatusID = 2;
+                await dbContext.SaveChangesAsync();
+                return Ok();
+            }
+            return NotFound();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut]
+        [Route("[action]/{username}")]
+        public async Task<IActionResult> PutReactiveUserStatus([FromServices] Context dbContext, string username)
+        {
+            var actualUser = await dbContext.user.FindAsync(username);
+            if (actualUser is not null)
+            {
+                actualUser.StatusID = 1;
                 await dbContext.SaveChangesAsync();
                 return Ok();
             }

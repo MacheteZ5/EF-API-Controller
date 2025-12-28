@@ -6,19 +6,17 @@ namespace WebChat_API.Models
     {
         private string userName = string.Empty;
         private string password = string.Empty;
+        private string email = string.Empty;
         private string firstName = string.Empty;
         private string lastName = string.Empty;
-        private DateTime birthdate = DateTime.MinValue;
-        private string email = string.Empty;
-        private int? statusUserID = 0;
+        private DateOnly birthdate = DateOnly.MinValue;
+        private byte statusID = byte.MinValue;
+        private DateTime? dateCreated = DateTime.MinValue;
 
         [JsonIgnore]
         public virtual StatusUser? statusUser { get; set; }
-
         [JsonIgnore]
-        public virtual IEnumerable<ChatsList>? firstChatsList { get; set; }
-        [JsonIgnore]
-        public virtual IEnumerable<ChatsList>? secondChatsList { get; set; }
+        public virtual IEnumerable<Room>? rooms { get; set; }
 
         public string UserName
         {
@@ -40,7 +38,7 @@ namespace WebChat_API.Models
             get { return this.lastName; }
             set { this.lastName = value; }
         }
-        public DateTime Birthdate
+        public DateOnly Birthdate
         {
             get { return this.birthdate; }
             set { this.birthdate = value; }
@@ -50,10 +48,15 @@ namespace WebChat_API.Models
             get { return this.email; }
             set { this.email = value; }
         }
-        public int? StatusUserID
+        public byte StatusID
         {
-            get { return this.statusUserID; }
-            set { this.statusUserID = value; }
+            get { return this.statusID; }
+            set { this.statusID = value; }
+        }
+        public DateTime? DateCreated
+        {
+            get { return this.dateCreated; }
+            set { this.dateCreated = value; }
         }
     }
 }

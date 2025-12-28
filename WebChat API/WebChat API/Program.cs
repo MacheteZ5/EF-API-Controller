@@ -12,11 +12,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Conexión hacia la base de datos
 builder.Services.AddSqlServer<Context>(builder.Configuration.GetConnectionString("cstring"));
 
 #region authentication
-//Esta sería la forma más fácil de utilizar los JWTBearerDefaults, puesto que no será necesario el configurar DefaultAuthenticateScheme, DefaultChallengeScheme y DefaultScheme
+builder.Services.Configure<ForwardedHeadersOptions>(option =>
+option.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false;
@@ -29,7 +29,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuerSigningKey = true,
         ValidAudience = builder.Configuration["Jwt:Audience"],
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
     };
 });
 #endregion
@@ -45,7 +45,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//Debemos de agregar el Middleware de authenticación tras haberlo colocado en el buildar
 app.UseAuthentication();
 
 app.UseAuthorization();

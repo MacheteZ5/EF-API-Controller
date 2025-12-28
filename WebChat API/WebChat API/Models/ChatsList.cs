@@ -7,30 +7,38 @@ namespace WebChat_API.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         private long id = 0;
-        private string firstUser = string.Empty;
-        private string secondUser = string.Empty;
+        private string name = string.Empty;
+        private string description = string.Empty;
+        private bool active = true;
+        private DateTime? dateCreated = DateTime.MinValue;
 
         [JsonIgnore]
-        public virtual User? FUsers { get; set; }
-        [JsonIgnore]
-        public virtual User? SUsers { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<Message>? Messages { get; set; }
+        public virtual IEnumerable<Room>? rooms { get; set; }
 
         public long ID
         {
             get { return this.id; }
             set { this.id = value; }
         }
-        public string FirstUser
+        public string Name
         {
-            get { return this.firstUser; }
-            set { this.firstUser = value; }
+            get { return this.name; }
+            set { this.name = value; }
         }
-        public string SecondUser
+        public string Description
         {
-            get { return this.secondUser; }
-            set { this.secondUser = value; }
+            get { return this.description; }
+            set { this.description = value; }
+        }
+        public bool Active
+        {
+            get { return this.active; }
+            set { this.active = value; }
+        }
+        public DateTime? DateCreated
+        {
+            get { return this.dateCreated; }
+            set { this.dateCreated = value; }
         }
     }
 }

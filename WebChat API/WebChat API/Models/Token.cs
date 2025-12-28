@@ -3,11 +3,11 @@
     public class Token
     {
         private string tokenString = string.Empty;
-        public DateTime expirationTime = DateTime.MinValue;
+        private DateTime expirationTime = DateTime.MinValue;
 
         public string TokenString
         {
-            get {  return this.tokenString; }
+            get { return this.tokenString; }
             set { this.tokenString = value; }
         }
         public DateTime ExpirationTime

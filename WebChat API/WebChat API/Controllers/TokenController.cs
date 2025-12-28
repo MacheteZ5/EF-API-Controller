@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WebChat_API.Models;
 
 namespace WebChat_API.Controllers
 {
@@ -19,30 +20,29 @@ namespace WebChat_API.Controllers
 
         [Route("GetToken")]
         [HttpPost]
-        public Models.Token GetToken([FromBody] Models.User user)
+        public Token GetToken([FromBody] string userName)
         {
-            var token = new Models.Token();
-            var applicationName = user.UserName;
-            var expirationDateTime = DateTime.Now.AddMinutes(30);
-            token.TokenString = CustomTokenJWT(applicationName, expirationDateTime);
-            token.expirationTime = expirationDateTime;
+            Token token = new();
+            token.TokenString = CustomTokenJWT(userName, DateTime.Now.AddMinutes(30));
+            token.ExpirationTime = DateTime.Now.AddMinutes(30);
             return token;
         }
-        private string CustomTokenJWT(string ApplicationName, DateTime token_expiration)
+        private string CustomTokenJWT(string applicationName, DateTime tokenExpiration)
         {
-            var _symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]!));
+            var _symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]));
             var _signingCredentials = new SigningCredentials(_symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
             var _Header = new JwtHeader(_signingCredentials);
             var _Claims = new[] {
+                //acá es lo que debemos de modificar las los parametros que vamos a utilizar.
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.NameId, ApplicationName)
+                new Claim(JwtRegisteredClaimNames.NameId, applicationName)
             };
             var _Payload = new JwtPayload(
                     issuer: configuration["JWT:Issuer"],
                     audience: configuration["JWT:Audience"],
                     claims: _Claims,
-                    notBefore: DateTime.Now, //cuanto va a durar el token
-                    expires: token_expiration // cuando va a expirar el token.
+                    notBefore: DateTime.Now,
+                    expires: tokenExpiration
                 );
             var _Token = new JwtSecurityToken(
                     _Header,
